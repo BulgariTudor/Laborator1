@@ -1,0 +1,255 @@
+Punctul "a"
+#include <iostream>
+#include <cstring>
+using namespace std;
+// Structura pentru reprezentarea unui computer
+struct Computer {
+    char* firmaProducatoare;
+    char* procesor;
+    double frecventaTact;
+    // Constructor pentru initializarea datelor
+    Computer(const char* firma, const char* cpu, double frecventa) {
+        firmaProducatoare = new char[strlen(firma) + 1]; //calculeaza lungimea unui sir de caractere
+        strcpy(firmaProducatoare, firma);
+        procesor = new char[strlen(cpu) + 1];
+        strcpy(procesor, cpu); // copiaza un sir de caracter in altul
+        frecventaTact = frecventa;
+    }
+    // Destructor pentru eliberarea memoriei alocate dinamic
+    ~Computer() {
+        delete[] firmaProducatoare;
+        delete[] procesor;
+    }
+    // Funcție pentru a modifica informația
+    void setProcesor(const char* cpu) {
+        delete[] procesor;
+        procesor = new char[strlen(cpu) + 1];
+        strcpy(procesor, cpu);
+    }
+    // Funcție pentru afișarea informației despre computer
+    void afiseazaInformatii() {
+        cout << "Firma producatoare: " << firmaProducatoare << endl;
+        cout << "Procesor: " << procesor << endl;
+        cout << "Frecventa de tact: " << frecventaTact << " GHz" << endl;
+    }
+    // Funcție pentru compara două computere după frecventa de tact + procesor
+    int compara(Computer& other) {
+        int cmp = strcmp(firmaProducatoare, other.firmaProducatoare);
+        if (cmp == 0) {
+            cmp = strcmp(procesor, other.procesor);
+            if (cmp == 0) {
+                if (frecventaTact < other.frecventaTact) {
+                    cmp = -1;
+                } else if (frecventaTact > other.frecventaTact) {
+                    cmp = 1;
+                }
+            }
+        }
+        return cmp;
+    }
+};
+int main() {
+    // Exemplificare utilizare
+    Computer computer1("HP", "Intel i7", 2.8);
+    Computer computer2("Dell", "AMD Ryzen 5", 3.2);
+    Computer computer3("Lenovo", "Intel i5", 2.4);
+    cout << "Informatii despre computere inainte de sortare:" << endl;
+    computer1.afiseazaInformatii();
+    computer2.afiseazaInformatii();
+    computer3.afiseazaInformatii();
+    // Sortare computere dupa frecventa de tact + procesor
+    Computer* computere[3] = {&computer1, &computer2, &computer3};
+    for (int i = 0; i < 2; i++) {
+        for (int j = i + 1; j < 3; j++) {
+            if (computere[i]->compara(*computere[j]) > 0) {
+                swap(computere[i], computere[j]);
+            }
+        }
+    }
+    cout << "\nInformatii despre computere dupa sortare:" << endl;
+    for (int i = 0; i < 3; i++) {
+        computere[i]->afiseazaInformatii();
+    }
+    return 0;
+}
+
+
+
+Punctul "b"
+#include <iostream>
+using namespace std;
+
+struct Vector {
+    double* data;
+    int size;
+};
+
+// Funcție pentru inițializarea vectorului
+void initialize(Vector& vec, int size) {
+    vec.data = new double[size];
+    vec.size = size;
+}
+
+// Funcție pentru eliminarea unui vector
+void destroy(Vector& vec) {
+    delete[] vec.data;
+    vec.size = 0;
+}
+
+// Funcție pentru modificarea dimensiunii vectorului
+void resize(Vector& vec, int newSize) {
+    double* newData = new double[newSize];
+    int copySize = min(vec.size, newSize);
+
+    for (int i = 0; i < copySize; i++) {
+        newData[i] = vec.data[i];
+    }
+
+    delete[] vec.data;
+    vec.data = newData;
+    vec.size = newSize;
+}
+
+// Funcție pentru accesul la elementele vectorului
+double& access(Vector& vec, int index) {
+    if (index < 0 || index >= vec.size) {
+        throw out_of_range("Index out of range");
+    }
+    return vec.data[index];
+}
+
+// Funcție pentru calculul sumei elementelor pozitive ale vectorului
+double sumOfPositiveElements(Vector& vec) {
+    double sum = 0.0;
+    for (int i = 0; i < vec.size; i++) {
+        if (vec.data[i] > 0) {
+            sum += vec.data[i];
+        }
+    }
+    return sum;
+}
+
+int main() {
+    Vector vec;
+    bool isInitialized = false;
+
+    while (true) {
+        cout << "Meniu:\n";
+        cout << "1. Initializare vector\n";
+        cout << "2. Modificare dimensiune vector\n";
+        cout << "3. Acces element vector\n";
+        cout << "4. Calcul suma elementelor pozitive\n";
+        cout << "5. Inmultire vector cu un numar\n";
+        cout << "6. Afisare vector\n";
+        cout << "7. Iesire\n";
+
+        int choice;
+        cout << "Selectati o optiune: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                if (isInitialized) {
+                    cout << "Vectorul este deja initializat.\n";
+                } else {
+                    int size;
+                    cout << "Introduceti dimensiunea vectorului: ";
+                    cin >> size;
+                    initialize(vec, size);
+                    isInitialized = true;
+
+                    cout << "Introduceti elementele vectorului:\n";
+                    for (int i = 0; i < size; i++) {
+                        cout << "Element " << i << ": ";
+                        cin >> vec.data[i];
+                    }
+
+                    cout << "Vector initializat cu succes.\n";
+                }
+                break;
+            }
+            case 2: {
+                if (!isInitialized) {
+                    cout << "Vectorul nu este initializat. Initializati-l mai intai.\n";
+                } else {
+                    int newSize;
+                    cout << "Introduceti noua dimensiune a vectorului: ";
+                    cin >> newSize;
+                    resize(vec, newSize);
+
+                    cout << "Introduceti elementele vectorului:\n";
+                    for (int i = 0; i < newSize; i++) {
+                        cout << "Element " << i << ": ";
+                        cin >> vec.data[i];
+                    }
+
+                    cout << "Dimensiunea vectorului a fost modificata cu succes.\n";
+                }
+                break;
+            }
+            case 3: {
+                if (!isInitialized) {
+                    cout << "Vectorul nu este initializat. Initializati-l mai intai.\n";
+                } else {
+                    int index;
+                    cout << "Introduceti indexul elementului dorit: ";
+                    cin >> index;
+                    try {
+                        double element = access(vec, index);
+                        cout << "Elementul de la indexul " << index << " este: " << element << endl;
+                    } catch (const out_of_range& e) {
+                        cout << "Indexul este in afara limitei vectorului.\n";
+                    }
+                }
+                break;
+            }
+            case 4: {
+                if (!isInitialized) {
+                    cout << "Vectorul nu este initializat. Initializati-l mai intai.\n";
+                } else {
+                    double sum = sumOfPositiveElements(vec);
+                    cout << "Suma elementelor pozitive din vector: " << sum << endl;
+                }
+                break;
+            }
+            case 5: {
+                if (!isInitialized) {
+                    cout << "Vectorul nu este initializat. Initializati-l mai intai.\n";
+                } else {
+                    double scalar;
+                    cout << "Introduceti numarul cu care sa fie inmultit vectorul: ";
+                    cin >> scalar;
+
+                    for (int i = 0; i < vec.size; i++) {
+                        vec.data[i] *= scalar;
+                    }
+
+                    cout << "Vectorul a fost inmultit cu succes cu " << scalar << ".\n";
+                }
+                break;
+            }
+            case 6: {
+                if (!isInitialized) {
+                    cout << "Vectorul nu este initializat. Initializati-l mai intai.\n";
+                } else {
+                    cout << "Elementele vectorului sunt:\n";
+                    for (int i = 0; i < vec.size; i++) {
+                        cout << "Element " << i << ": " << vec.data[i] << endl;
+                    }
+                }
+                break;
+            }
+            case 7: {
+                if (isInitialized) {
+                    destroy(vec);
+                }
+                cout << "Programul s-a incheiat.\n";
+                return 0;
+            }
+            default:
+                cout << "Optiune invalida. Va rugam selectati o optiune valida.\n";
+        }
+    }
+
+    return 0;
+}
